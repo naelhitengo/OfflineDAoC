@@ -10,7 +10,7 @@ namespace DOL.GS.PlayerClass
 			: base()
 		{
 			m_profession = "PlayerClass.Profession.TempleofArawn";
-			m_specializationMultiplier = 10;
+			m_specializationMultiplier = 30;
 			m_primaryStat = eStat.INT;
 			m_secondaryStat = eStat.DEX;
 			m_tertiaryStat = eStat.QUI;

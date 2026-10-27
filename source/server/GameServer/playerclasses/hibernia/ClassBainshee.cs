@@ -29,7 +29,7 @@ namespace DOL.GS.PlayerClass
 		public ClassBainshee() : base()
 		{
 			m_profession = "PlayerClass.Profession.PathofAffinity";
-			m_specializationMultiplier = 10;
+			m_specializationMultiplier = 30;
 			m_primaryStat = eStat.INT;
 			m_secondaryStat = eStat.DEX;
 			m_tertiaryStat = eStat.CON;

@@ -28,10 +28,10 @@ namespace DOL.GS.PlayerClass
 			: base()
 		{
 			m_profession = "PlayerClass.Profession.HouseofOdin";
-			m_specializationMultiplier = 10;
+			m_specializationMultiplier = 30;
 			m_primaryStat = eStat.PIE;
 			m_secondaryStat = eStat.DEX;
-			m_tertiaryStat = eStat.QUI;
+			m_tertiaryStat = eStat.CON;
 			m_manaStat = eStat.PIE;
 		}
 

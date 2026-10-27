@@ -28,7 +28,7 @@ namespace DOL.GS.PlayerClass
 			: base()
 		{
 			m_profession = "PlayerClass.Profession.HouseofOdin";
-			m_specializationMultiplier = 20;
+			m_specializationMultiplier = 50;
 			m_primaryStat = eStat.CON;
 			m_secondaryStat = eStat.STR;
 			m_tertiaryStat = eStat.DEX;
@@ -49,7 +49,7 @@ namespace DOL.GS.PlayerClass
 
 		public override List<PlayerRace> EligibleRaces => new List<PlayerRace>()
 		{
-			// PlayerRace.Dwarf, PlayerRace.Frostalf, PlayerRace.Norseman,
+			PlayerRace.Dwarf, PlayerRace.Frostalf, PlayerRace.Norseman,
 		};
 	}
 }
