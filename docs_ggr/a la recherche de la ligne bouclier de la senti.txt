@@ -1,0 +1,149 @@
+377	46	NaturalistCareer	-1000	
+378	46	CharacterStyleUserCareer	-100	
+379	46	WardenCareer	-100	
+380	46	Nurture	-9	
+381	46	Regrowth	-10	
+382	46	Blades	-8	
+383	46	Blunt	-7	
+385	46	Parry	-5	
+
+
+select max(ClassXSpecializationId) from ClassXSpecialization;
+
+max(ClassXSpecializationId)
+675
+
+select * from ClassXSpecialization where SpecKeyName = 'shields';
+
+ClassXSpecializationID	ClassID	SpecKeyName	LevelAcquired	LastTimeRowUpdated
+299	44	Shields	-5	2000-01-01 00:00:00
+309	45	Shields	-6	2000-01-01 00:00:00
+319	43	Shields	-6	2000-01-01 00:00:00
+
+
+select * from ClassXSpecialization where classId =46;
+
+ClassXSpecializationID	ClassID	SpecKeyName	LevelAcquired	LastTimeRowUpdated
+377	46	NaturalistCareer	-1000	2000-01-01 00:00:00
+378	46	CharacterStyleUserCareer	-100	2000-01-01 00:00:00
+379	46	WardenCareer	-100	2000-01-01 00:00:00
+380	46	Nurture	-9	2000-01-01 00:00:00
+381	46	Regrowth	-10	2000-01-01 00:00:00
+382	46	Blades	-8	2000-01-01 00:00:00
+383	46	Blunt	-7	2000-01-01 00:00:00
+385	46	Parry	-5	2000-01-01 00:00:00
+
+
+comment faire le insert into 
+
+SELECT sql FROM sqlite_master WHERE type='table' AND name='ClassXSpecialization';
+
+CREATE TABLE `ClassXSpecialization` (`ClassXSpecializationID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+`ClassID` INT(11) NOT NULL DEFAULT 0, 
+`SpecKeyName` VARCHAR(100) NOT NULL DEFAULT '' COLLATE NOCASE, 
+`LevelAcquired` INT(11) NOT NULL DEFAULT 0, 
+`LastTimeRowUpdated` DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00')
+
+L'exécution s'est terminée sans erreur.
+Résultat : Requête exécutée avec succès. Elle a pris 0 ms , 1 enregistrements affectés
+À la ligne 1 :
+INSERT INTO ClassXSpecialization (ClassID, SpecKeyName, LevelAcquired, LastTimeRowUpdated)
+VALUES (46, 'Shields', -5, '2000-01-01 00:00:00');
+
+
+
+
+
+
+
+
+
+--select * from SpecXAbility where spec in ('HeroCareer' , 'WardenCareer')
+
+SpecXabilityID	Spec	SpecLevel	AbilityKey	AbilityLevel	ClassId	LastTimeRowUpdated
+220	HeroCareer	1	HibArmor	3	0	2000-01-01 00:00:00
+233	HeroCareer	15	HibArmor	4	0	2000-01-01 00:00:00
+234	HeroCareer	10	Shield	3	0	2000-01-01 00:00:00
+235	HeroCareer	1	Weaponry: Large Weapons	0	0	2000-01-01 00:00:00
+236	HeroCareer	1	Weaponry: Celtic Spears	0	0	2000-01-01 00:00:00
+237	HeroCareer	11	Protect	1	0	2000-01-01 00:00:00
+238	HeroCareer	12	Intercept	0	0	2000-01-01 00:00:00
+239	HeroCareer	15	Stag	1	0	2000-01-01 00:00:00
+240	HeroCareer	1	Weaponry: Shortbows	0	0	2000-01-01 00:00:00
+241	HeroCareer	20	Protect	2	0	2000-01-01 00:00:00
+242	HeroCareer	25	Stag	2	0	2000-01-01 00:00:00
+243	HeroCareer	27	Protect	3	0	2000-01-01 00:00:00
+244	HeroCareer	35	Stag	3	0	2000-01-01 00:00:00
+245	HeroCareer	45	Stag	4	0	2000-01-01 00:00:00
+259	HeroCareer	5	Shield	2	0	2000-01-01 00:00:00
+252	WardenCareer	10	HibArmor	3	0	2000-01-01 00:00:00
+316	WardenCareer	5	Shield	2	0	2000-01-01 00:00:00
+317	WardenCareer	20	HibArmor	4	0	2000-01-01 00:00:00
+318	WardenCareer	1	Weaponry: Shortbows	0	0	2000-01-01 00:00:00
+
+
+
+--select distinct SpecKeyName from Style  order by SpecKeyName
+select * from Style  where  SpecKeyName ='Blunt' or  SpecKeyName = 'Shields'order by SpecKeyName , SpecLevelRequirement;
+
+
+select * from Style  where  SpecKeyName = 'Shields' and ClassId = 44 order by SpecKeyName , SpecLevelRequirement;
+
+select max(StyleID), max(ID)from Style
+ 
+INSERT INTO Style (
+    ID, ClassId, Name, SpecKeyName, SpecLevelRequirement, Icon, 
+    EnduranceCost, StealthRequirement, OpeningRequirementType, 
+    OpeningRequirementValue, AttackResultRequirement, WeaponTypeRequirement, 
+    GrowthOffset, GrowthRate, BonusToHit, BonusToDefense, 
+    TwoHandAnimation, RandomProc, ArmorHitLocation, LastTimeRowUpdated
+)
+SELECT 
+    ID, 46, Name, SpecKeyName, SpecLevelRequirement, Icon, 
+    EnduranceCost, StealthRequirement, OpeningRequirementType, 
+    OpeningRequirementValue, AttackResultRequirement, WeaponTypeRequirement, 
+    GrowthOffset, GrowthRate, BonusToHit, BonusToDefense, 
+    TwoHandAnimation, RandomProc, ArmorHitLocation, datetime('now')
+FROM Style 
+WHERE ClassId = 44 AND SpecKeyName = 'Shields';
+
+plus qu'a reboot et tester :)
+
+
+ok mais  un dernier changement :)
+
+--select * from SpecXAbility where spec in ('HeroCareer' , 'WardenCareer')
+
+SpecXabilityID	Spec	SpecLevel	AbilityKey	AbilityLevel	ClassId	LastTimeRowUpdated
+234	HeroCareer	10	Shield	3	0	2000-01-01 00:00:00
+259	HeroCareer	5	Shield	2	0	2000-01-01 00:00:00
+316	WardenCareer	5	Shield	2	0	2000-01-01 00:00:00
+
+INSERT INTO SpecXAbility (
+    Spec, 
+    SpecLevel, 
+    AbilityKey, 
+    AbilityLevel, 
+    ClassId, 
+    LastTimeRowUpdated
+)
+VALUES (
+    'WardenCareer', 
+    10, 
+    'Shield', 
+    3, 
+    0, 
+    datetime('now')
+);
+
+
+
+SpecXabilityID	Spec	SpecLevel	AbilityKey	AbilityLevel	ClassId	LastTimeRowUpdated
+3473	WardenCareer	10	Shield	3	0	2026-10-27 14:43:41
+
+
+
+c'est ok pour le grand bouclier.
+
+
+
