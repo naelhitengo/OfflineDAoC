@@ -16,7 +16,7 @@
         <ScriptAssemblies> </ScriptAssemblies>
         <EnableCompilation>True</EnableCompilation>
         <AutoAccountCreation>True</AutoAccountCreation>
-        <GameType>PvE</GameType>
+        <GameType>Normal</GameType>
         <CheatLoggerName>cheats</CheatLoggerName>
         <GMActionLoggerName>gmactions</GMActionLoggerName>
         <InvalidNamesFile>./config/invalidnames.txt</InvalidNamesFile>

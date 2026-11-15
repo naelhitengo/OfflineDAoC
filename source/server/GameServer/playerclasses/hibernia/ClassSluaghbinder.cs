@@ -22,7 +22,7 @@ namespace DOL.GS.PlayerClass
 			// Sluaghbinder follows the Necromancer specialization budget.  Its
 			// hybrid combat and pet tools come from the class and its trainable
 			// paths, not from an inflated point multiplier.
-			m_specializationMultiplier = 10;
+			m_specializationMultiplier = 30; 
 			m_primaryStat = eStat.STR;
 			m_secondaryStat = eStat.INT;
 			m_tertiaryStat = eStat.CON;
@@ -39,8 +39,11 @@ namespace DOL.GS.PlayerClass
 
 		// The experimental class is intentionally limited to Celt and Firbolg.
 		// Do not inherit the old Mauler slot's Lurikeen/Minotaur/Elf choices.
+		// Nael: mage, so need dext and int, so Elf and lurikeen.
 		public override List<PlayerRace> EligibleRaces => new List<PlayerRace>()
 		{
+			PlayerRace.Lurikeen,
+			PlayerRace.Elf,
 			PlayerRace.Celt,
 			PlayerRace.Firbolg,
 		};
