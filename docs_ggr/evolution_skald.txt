@@ -1,0 +1,370 @@
+
+l'objectif de ce fichier est de voir pour ajouter au skald 3 sorts a sa ligne battlesong, le bladeturn, le regen endu et le regen mana.
+
+SELECT * FROM ClassXSpecialization where classId in (24,46) ;
+
+ClassXSpecializationID	ClassID	SpecKeyName	LevelAcquired	LastTimeRowUpdated
+44	24	SkaldCareer	-100	2000-01-01 00:00:00
+45	24	CharacterStyleUserCareer	-100	2000-01-01 00:00:00
+46	24	VikingCareer	-1000	2000-01-01 00:00:00
+47	24	Battlesongs	-6	2000-01-01 00:00:00
+69	24	Axe	-10	2000-01-01 00:00:00
+70	24	Sword	-8	2000-01-01 00:00:00
+71	24	Parry	-7	2000-01-01 00:00:00
+72	24	Hammer	-9	2000-01-01 00:00:00
+377	46	NaturalistCareer	-1000	2000-01-01 00:00:00
+378	46	CharacterStyleUserCareer	-100	2000-01-01 00:00:00
+379	46	WardenCareer	-100	2000-01-01 00:00:00
+380	46	Nurture	-9	2000-01-01 00:00:00
+381	46	Regrowth	-10	2000-01-01 00:00:00
+382	46	Blades	-8	2000-01-01 00:00:00
+383	46	Blunt	-7	2000-01-01 00:00:00
+385	46	Parry	-5	2000-01-01 00:00:00
+676	46	Shields	-5	2000-01-01 00:00:00
+
+
+deja un extrait de la table spellline : 
+SELECT * FROM SpellLine
+SpellLineID	KeyName	Name	Spec	IsBaseLine	ClassIDHint	LastTimeRowUpdated
+1	Verdant Path Spec Pet	Verdant Path Spec Pet	Verdant Path Spec Pet	1	0	2000-01-01 00:00:00
+2	Spectral Force	Spectral Force	Spectral Guard	1	0	2000-01-01 00:00:00
+3	Spectral Guard	Spectral Guard	Spectral Guard	0	0	2000-01-01 00:00:00
+4	Ethereal Shriek	Ethereal Shriek	Ethereal Shriek	0	0	2000-01-01 00:00:00
+5	Phantasmal Wail	Phantasmal Wail	Phantasmal Wail	0	0	2000-01-01 00:00:00
+6	Witchcraft	Witchcraft	Witchcraft	0	0	2000-01-01 00:00:00
+7	Hexing	Hexing	Hexing	0	0	2000-01-01 00:00:00
+8	Cursing	Cursing	Cursing	1	0	2000-01-01 00:00:00
+9	Valor	Valor	Valor	0	0	2000-01-01 00:00:00
+10	Deathsight Spec	Deathsight Mastery	Deathsight	0	0	2000-01-01 00:00:00
+
+
+donc pour le skald, c'est bien le battlesong
+
+sachant que pour les styles on avait : 
+
+
+--select * from SpecXAbility where spec in ('WardenCareer')
+
+SpecXabilityID	Spec	SpecLevel	AbilityKey	AbilityLevel	ClassId	LastTimeRowUpdated
+252	WardenCareer	10	HibArmor	3	0	2000-01-01 00:00:00
+316	WardenCareer	5	Shield	2	0	2000-01-01 00:00:00
+317	WardenCareer	20	HibArmor	4	0	2000-01-01 00:00:00
+318	WardenCareer	1	Weaponry: Shortbows	0	0	2000-01-01 00:00:00
+
+et dans le code.
+source\server\GameServer\GlobalConstants.cs
+
+{eRealm.Midgard, new List<eCharacterClass>() {eCharacterClass.Viking, eCharacterClass.Mystic
+eCharacterClass.Skald, 		// Skald = 24,
+eCharacterClass.Runemaster, 	// Runemaster = 29,
+}},
+{eRealm.Hibernia, new List<eCharacterClass>() {eCharacterClass.Naturalist, 
+eCharacterClass.Warden, 	    // Warden = 46,
+eCharacterClass.Bard, 	        // Bard = 48,
+}
+
+les sorts des bladeturns pour le runemaster et la sentinelle: mais je ne trouve pas de lien avec les spellLine.
+
+SELECT * FROM Spell where Type = 'bladeturn' and PackageID in ('Runes of Suppression','Warden_PBT');
+
+SpellID	ClientEffect	Icon	Name	Description	Target	Range	Power	CastTime	Damage	DamageType	Type	Duration	Frequency	Pulse	PulsePower	Radius	RecastDelay	ResurrectHealth	ResurrectMana	Value	Concentration	LifeDrainReturn	AmnesiaChance	Message1	Message2	Message3	Message4	InstrumentRequirement	SpellGroup	EffectGroup	SubSpellID	MoveCast	Uninterruptible	IsFocus	SharedTimerGroup	IsPrimary	IsSecondary	AllowBolt	PackageID	TooltipId	LastTimeRowUpdated	Spell_ID
+2721	2721	2721	Runic Ward	A 'bubble' that absorbs the damage of a single melee hit.	Self	0	-8	4.0	0.0	0	Bladeturn	65535	0	0	0	0	0	0	0	0.0	0	0	0	A crystal shield covers you.	A crystal shield covers {0}'s skin.	Your crystal shield fades.	{0}'s crystal shield fades.	0	2721	52	0	0	0	0	0	0	0	0	Runes of Suppression	2721	2000-01-01 00:00:00	2721
+2722	2722	2722	Runic Fend	A 'bubble' that absorbs the damage of a single melee hit.	Realm	1250	-8	4.0	0.0	0	Bladeturn	65535	0	0	0	0	0	0	0	0.0	0	0	0	A crystal shield covers you.	A crystal shield covers {0}'s skin.	Your crystal shield fades.	{0}'s crystal shield fades.	0	2722	52	0	0	0	0	0	0	0	0	Runes of Suppression	2722	2000-01-01 00:00:00	2722
+2723	2723	2723	Runic Shield	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	-12	4.0	0.0	0	Bladeturn	65535	0	0	0	0	0	0	0	0.0	0	0	0	A crystal shield covers you.	A crystal shield covers {0}'s skin.	Your crystal shield fades.	{0}'s crystal shield fades.	0	2723	52	0	0	0	0	0	0	0	0	Runes of Suppression	2723	2000-01-01 00:00:00	2723
+2724	2724	2724	Runic Guard	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	16	4.0	0.0	0	Bladeturn	10	100	1	4	0	0	0	0	0.0	0	0	0	A crystal shield covers you.				0	0	52	0	0	0	0	0	0	0	0	Runes of Suppression	2724	2000-01-01 00:00:00	2724
+2725	2725	2725	Runic Barrier	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	21	4.0	0.0	0	Bladeturn	8	80	1	5	0	0	0	0	0.0	0	0	0	A crystal shield covers you.				0	0	52	0	0	0	0	0	0	0	0	Runes of Suppression	2725	2000-01-01 00:00:00	2725
+2726	2726	2726	Runic Wall	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	28	4.0	0.0	0	Bladeturn	6	60	1	7	0	0	0	0	0.0	0	0	0	A crystal shield covers you.				0	0	52	0	0	0	0	0	0	0	0	Runes of Suppression	2726	2000-01-01 00:00:00	2726
+5121	5121	5121	Nature's Ward	A 'bubble' that absorbs the damage of a single melee hit.	Self	0	-8	4.0	0.0	0	Bladeturn	65535	0	0	0	0	0	0	0	0.0	0	0	0	A crystal shield covers you.	A crystal shield covers {0}'s skin.	Your crystal shield fades.	{0}'s crystal shield fades.	0	5121	52	0	0	0	0	0	0	0	0	Warden_PBT	5121	2000-01-01 00:00:00	5121
+5122	5122	5122	Nature's Fend	A 'bubble' that absorbs the damage of a single melee hit.	Realm	1250	-8	4.0	0.0	0	Bladeturn	65535	0	0	0	0	0	0	0	0.0	0	0	0	A crystal shield covers you.	A crystal shield covers {0}'s skin.	Your crystal shield fades.	{0}'s crystal shield fades.	0	5122	52	0	0	0	0	0	0	0	0	Warden_PBT	5122	2000-01-01 00:00:00	5122
+5123	5123	5123	Nature's Shield	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	-12	4.0	0.0	0	Bladeturn	65535	0	0	0	0	0	0	0	0.0	0	0	0	A crystal shield covers you.	A crystal shield covers {0}'s skin.	Your crystal shield fades.	{0}'s crystal shield fades.	0	5123	52	0	0	0	0	0	0	0	0	Warden_PBT	5123	2000-01-01 00:00:00	5123
+5124	5124	5124	Nature's Guard	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	16	0.0	0.0	0	Bladeturn	10	100	1	4	0	16	0	0	0.0	0	0	0	A crystal shield covers you.				0	5124	52	0	0	0	0	0	0	0	0	Warden_PBT	5124	2000-01-01 00:00:00	5124
+5125	5125	5125	Nature's Barrier	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	23	0.0	0.0	0	Bladeturn	8	80	1	5	0	16	0	0	0.0	0	0	0	A crystal shield covers you.				0	5124	52	0	0	0	0	0	0	0	0	Warden_PBT	5125	2000-01-01 00:00:00	5125
+5126	5126	5126	Nature's Wall	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	29	0.0	0.0	0	Bladeturn	6	60	1	7	0	16	0	0	0.0	0	0	0	A crystal shield covers you.				0	5124	52	0	0	0	0	0	0	0	0	Warden_PBT	5126	2000-01-01 00:00:00	5126
+
+
+select * from spellline where spec  in ('Suppression','battlesongs');
+
+SpellLineID	KeyName	Name	Spec	IsBaseLine	ClassIDHint	LastTimeRowUpdated
+36	Battlesongs	Battlesongs	Battlesongs	0	0	2000-01-01 00:00:00
+11	Bone Guardians	Bone Guardians	Suppression	0	30	2000-01-01 00:00:00
+16	Spirit Suppression	Spirit Suppression	Suppression	0	27	2000-01-01 00:00:00
+76	Runes of Suppression	Runes of Suppression	Suppression	0	29	2000-01-01 00:00:00
+97	Suppression	Suppression	Suppression	1	0	2000-01-01 00:00:00
+
+
+ajoutons ceci : 
+select * from LineXSpell  where LineName  in ('Runes of Suppression','battlesongs')
+
+LineName	SpellID	Level	LastTimeRowUpdated	LineXSpell_ID
+Battlesongs	3613	1	2000-01-01 00:00:00	Battlesongs_1
+Battlesongs	3614	10	2000-01-01 00:00:00	Battlesongs_10
+Battlesongs	3641	11	2000-01-01 00:00:00	Battlesongs_11
+Battlesongs	3626	12	2000-01-01 00:00:00	Battlesongs_12
+Battlesongs	3609	13	2000-01-01 00:00:00	Battlesongs_13
+Battlesongs	3603	14	2000-01-01 00:00:00	Battlesongs_14
+Battlesongs	3630	15	2000-01-01 00:00:00	Battlesongs_15
+Battlesongs	3642	17	2000-01-01 00:00:00	Battlesongs_17
+Battlesongs	3622	18	2000-01-01 00:00:00	Battlesongs_18
+Battlesongs	3628	44	2000-01-01 00:00:00	Battlesongs_44
+Battlesongs	3607	46	2000-01-01 00:00:00	Battlesongs_46
+Battlesongs	3601	5	2000-01-01 00:00:00	Battlesongs_5
+Battlesongs	3618	50	2000-01-01 00:00:00	Battlesongs_50
+Battlesongs	3634	50	2000-01-01 00:00:00	Battlesongs_50_2
+Battlesongs	3629	6	2000-01-01 00:00:00	Battlesongs_6
+Battlesongs	3621	7	2000-01-01 00:00:00	Battlesongs_7
+Battlesongs	3602	9	2000-01-01 00:00:00	Battlesongs_9
+Battlesongs	3652	44	2000-01-01 00:00:00	Skald Res Song 44
+Battlesongs	3654	45	2000-01-01 00:00:00	Skald Res Song 45
+Battlesongs	3656	46	2000-01-01 00:00:00	Skald Res Song 46
+Battlesongs	3658	47	2000-01-01 00:00:00	Skald Res Song 47
+Battlesongs	3690	48	2000-01-01 00:00:00	Skald Res Song 48
+Battlesongs	3662	49	2000-01-01 00:00:00	Skald Res Song 49
+Runes of Suppression	2701	1	2000-01-01 00:00:00	Runes of Suppression_1
+Runes of Suppression	2706	23	2000-01-01 00:00:00	Runes of Suppression_23
+Runes of Suppression	2714	24	2000-01-01 00:00:00	Runes of Suppression_24
+Runes of Suppression	2733	25	2000-01-01 00:00:00	Runes of Suppression_25
+Runes of Suppression	2724	26	2000-01-01 00:00:00	Runes of Suppression_26
+Runes of Suppression	2744	27	2000-01-01 00:00:00	Runes of Suppression_27
+Runes of Suppression	2715	28	2000-01-01 00:00:00	Runes of Suppression_28
+Runes of Suppression	2735	40	2000-01-01 00:00:00	Runes of Suppression_40
+Runes of Suppression	2708	41	2000-01-01 00:00:00	Runes of Suppression_41
+Runes of Suppression	2726	44	2000-01-01 00:00:00	Runes of Suppression_44
+Runes of Suppression	2717	45	2000-01-01 00:00:00	Runes of Suppression_45
+Runes of Suppression	2746	46	2000-01-01 00:00:00	Runes of Suppression_46
+Runes of Suppression	2702	5	2000-01-01 00:00:00	Runes of Suppression_5
+Runes of Suppression	2709	50	2000-01-01 00:00:00	Runes of Suppression_50
+Runes of Suppression	2741	7	2000-01-01 00:00:00	Runes of Suppression_7
+Runes of Suppression	2711	8	2000-01-01 00:00:00	Runes of Suppression_8
+Runes of Suppression	2703	9	2000-01-01 00:00:00	Runes of Suppression_9
+
+
+
+
+SELECT SpellID, Name, Type, CastTime, Range, Value, Description 
+FROM Spell 
+WHERE Type LIKE '%Endurance%' --OR Name LIKE '%Endurance%'  
+or Type LIKE '%POWER%' --OR Name LIKE '%Power%'
+
+
+SpellID	Name	Type	CastTime	Range	Value	Description
+1081	Chant of Endurance	EnduranceRegenBuff	0.0	1000	1.0	Target regenerates 1 endurance during the duration of the spell.
+1082	Chant of Stamina	EnduranceRegenBuff	0.0	1000	2.0	Target regenerates 2 endurance during the duration of the spell.
+1083	Chant of Persistence	EnduranceRegenBuff	0.0	1000	3.0	Target regenerates 3 endurance during the duration of the spell.
+1084	Chant of Resilience	EnduranceRegenBuff	0.0	1000	4.0	Target regenerates 4 endurance during the duration of the spell.
+1085	Chant of Perseverance	EnduranceRegenBuff	0.0	1000	5.0	Target regenerates 5 endurance during the duration of the spell.
+1121	Song of Power	PowerRegenBuff	3.0	700	1.0	Target regenerates 1 extra power during the duration of the spell.
+1122	Song of Energy	PowerRegenBuff	3.0	700	2.0	Target regenerates 2 extra power during the duration of the spell.
+1123	Song of Clarity	PowerRegenBuff	3.0	700	3.0	Target regenerates 3 extra power during the duration of the spell.
+1124	Song of the Mind	PowerRegenBuff	3.0	700	4.0	Target regenerates 4 extra power during the duration of the spell.
+1125	Song of Empowering	PowerRegenBuff	3.0	700	5.0	Target regenerates 5 extra power during the duration of the spell.
+
+
+SELECT SpellID, Name, Type, CastTime, RecastDelay, Duration, Frequency 
+FROM Spell 
+WHERE SpellID IN (2724, 2725, 2726, 5124, 5125, 5126);
+
+SpellID	Name	Type	CastTime	RecastDelay	Duration	Frequency
+2724	Runic Guard	Bladeturn	4.0	0	10	100
+2725	Runic Barrier	Bladeturn	4.0	0	8	80
+2726	Runic Wall	Bladeturn	4.0	0	6	60
+5124	Nature's Guard	Bladeturn	0.0	16	10	100
+5125	Nature's Barrier	Bladeturn	0.0	16	8	80
+5126	Nature's Wall	Bladeturn	0.0	16	6	60
+
+
+
+
+20261111
+
+donc on a resumé avec 
+
+
+SELECT SpellID, Name, Type, CastTime, Range, Value, Description
+FROM Spell  WHERE (Type LIKE '%EnduranceRegenBuff%' or Type LIKE '%PowerRegenBuff%' )
+and (name like '%chant%' or name LIKE '%song%' )
+
+SELECT *  -- SpellID, Name, Type, CastTime, Range, Value, Description
+FROM Spell  WHERE (Type LIKE '%EnduranceRegenBuff%' or Type LIKE '%PowerRegenBuff%' )
+and (name like '%chant%' or name LIKE '%song%' )
+
+SELECT * -- SpellID, Name, Type, CastTime, RecastDelay, Duration, Frequency
+FROM Spell
+WHERE SpellID IN (2724, 2725, 2726, 5124, 5125, 5126);
+
+
+select * from spellline where spec  in ('battlesongs'); 								
+SpellLineID	KeyName	Name	Spec	IsBaseLine	ClassIDHint	LastTimeRowUpdated		
+36	Battlesongs	Battlesongs	Battlesongs	0	0	2000-01-01 00:00:00		
+
+
+select * from LineXSpell where LineName  in ('battlesongs') order by level;										
+LineName	SpellID	Level	LastTimeRowUpdated	LineXSpell_ID
+Battlesongs	3613	1	2000-01-01 00:00:00	Battlesongs_1
+Battlesongs	3620	2	2000-01-01 00:00:00	Battlesongs_2
+Battlesongs	3608	3	2000-01-01 00:00:00	Battlesongs_3
+etc ...
+																					
+select * from spell where spellId in (select spellid from LineXSpell  where LineName  in ('battlesongs'));																																										
+SpellID	ClientEffect	Icon	Name	Description	Target	Range	Power	CastTime	Damage	DamageType	Type	Duration	Frequency	Pulse	PulsePower	Radius	RecastDelay	ResurrectHealth	ResurrectMana	Value	Concentration	LifeDrainReturn	AmnesiaChance	Message1	Message2	Message3	Message4	InstrumentRequirement	SpellGroup	EffectGroup	SubSpellID	MoveCast	Uninterruptible	IsFocus	SharedTimerGroup	IsPrimary	IsSecondary	AllowBolt	PackageID	TooltipId	LastTimeRowUpdated	Spell_ID
+3601	3601	3601	Chant of the Brawl	Target's melee attacks do 1.3 additional damage.	Group	1500	0	0.0	1.3	10	DamageAdd	5	50	1	0	0	8	0	0	0.0	0	0	0	You swing your weapon with zeal!				0	3601	41	0	0	0	0	0	0	0	0	Skald_DmgAdd	3601	2021-11-04 01:57:10	3601
+3602	3602	3602	Chant of the Fight	Target's melee attacks do 1.9 additional damage.	Group	1500	0	0.0	1.9	10	DamageAdd	5	50	1	0	0	8	0	0	0.0	0	0	0	You swing your weapon with zeal!				0	3601	41	0	0	0	0	0	0	0	0	Skald_DmgAdd	3602	2021-11-04 01:57:20	3602
+3603	3603	3603	Chant of the Charge	Target's melee attacks do 2.7 additional damage.	Group	1500	0	0.0	2.7	10	DamageAdd	5	50	1	0	0	8	0	0	0.0	0	0	0	You swing your weapon with zeal!				0	3601	41	0	0	0	0	0	0	0	0	Skald_DmgAdd	3603	2021-11-04 01:57:41	3603
+etc ...
+
+
+
+select * from LineXSpell where spellId in (1081,1082,1083,1084,1085,1121,1122,1123,1124,1125,2724,2725,2726,5124,5125,5126) or  LineName  in ('battlesongs')										
+order by   level;										
+
+
+LineName	SpellID	Level	LastTimeRowUpdated	LineXSpell_ID		LineName	SpellID	Level	LastTimeRowUpdated	LineXSpell_ID
+Battlesongs	3613	1	2000-01-01 00:00:00	Battlesongs_1						
+Battlesongs	3620	2	2000-01-01 00:00:00	Battlesongs_2						
+Chants	1081	2	2000-01-01 00:00:00	Chants_2_2		Battlesongs	401081	2	2026-11-11 00:00:00	Battlesongs_2_2
+Battlesongs	3608	3	2000-01-01 00:00:00	Battlesongs_3						
+Battlesongs	3625	4	2000-01-01 00:00:00	Battlesongs_4						
+Battlesongs	3601	5	2000-01-01 00:00:00	Battlesongs_5						
+Battlesongs	3629	6	2000-01-01 00:00:00	Battlesongs_6						
+Battlesongs	3621	7	2000-01-01 00:00:00	Battlesongs_7						
+Battlesongs	3602	9	2000-01-01 00:00:00	Battlesongs_9						
+Battlesongs	3614	10	2000-01-01 00:00:00	Battlesongs_10						
+Instruments	1121	10	2000-01-01 00:00:00	Instruments_10_2		Battlesongs	401121	10	2026-11-11 00:00:00	Battlesongs_10_2
+Battlesongs	3641	11	2000-01-01 00:00:00	Battlesongs_11						
+Battlesongs	3626	12	2000-01-01 00:00:00	Battlesongs_12						
+Chants	1082	12	2000-01-01 00:00:00	Chants_12_2		Battlesongs	401082	12	2026-11-11 00:00:00	Battlesongs_12_2
+Battlesongs	3609	13	2000-01-01 00:00:00	Battlesongs_13						
+Battlesongs	3603	14	2000-01-01 00:00:00	Battlesongs_14						
+Battlesongs	3630	15	2000-01-01 00:00:00	Battlesongs_15						
+Battlesongs	3642	17	2000-01-01 00:00:00	Battlesongs_17						
+Battlesongs	3622	18	2000-01-01 00:00:00	Battlesongs_18						
+Battlesongs	3604	19	2000-01-01 00:00:00	Battlesongs_19						
+Battlesongs	3615	20	2000-01-01 00:00:00	Battlesongs_20						
+Battlesongs	3631	21	2000-01-01 00:00:00	Battlesongs_21						
+Instruments	1122	21	2000-01-01 00:00:00	Instruments_21_2		Battlesongs	401122	21	2026-11-11 00:00:00	Battlesongs_21_2
+Battlesongs	3643	22	2000-01-01 00:00:00	Battlesongs_22_2						
+Chants	1083	22	2000-01-01 00:00:00	Chants_22		Battlesongs	401083	22	2026-11-11 00:00:00	Battlesongs_22_3
+Battlesongs	3610	23	2000-01-01 00:00:00	Battlesongs_22						
+Battlesongs	3605	25	2000-01-01 00:00:00	Battlesongs_25						
+Battlesongs	3651	25	2000-01-01 00:00:00	Skald Res Song 25						
+Battlesongs	3627	26	2000-01-01 00:00:00	Battlesongs_26						
+Nurture Warden Spec	5124	26	2000-01-01 00:00:00	Nurture Warden Spec_26						
+Runes of Suppression	2724	26	2000-01-01 00:00:00	Runes of Suppression_26		Battlesongs	402724	26	2026-11-11 00:00:00	Battlesongs_26_2
+Battlesongs	3653	26	2000-01-01 00:00:00	Skald Res Song 26						
+Battlesongs	3655	27	2000-01-01 00:00:00	Skald Res Song 27						
+Battlesongs	3657	28	2000-01-01 00:00:00	Skald Res Song 28						
+Battlesongs	3659	29	2000-01-01 00:00:00	Skald Res Song 29						
+Battlesongs	3616	30	2000-01-01 00:00:00	Battlesongs_30						
+Instruments	1123	30	2000-01-01 00:00:00	Instruments_30						
+Battlesongs	3661	30	2000-01-01 00:00:00	Skald Res Song 30						
+Battlesongs	3644	31	2000-01-01 00:00:00	Battlesongs_31						
+Battlesongs	3632	32	2000-01-01 00:00:00	Battlesongs_32						
+Chants	1084	32	2000-01-01 00:00:00	Chants_32		Battlesongs	401084	32	2026-11-11 00:00:00	Battlesongs_32_2
+Battlesongs	3611	33	2000-01-01 00:00:00	Battlesongs_33						
+Battlesongs	3623	34	2000-01-01 00:00:00	Battlesongs_34						
+Runes of Suppression	2725	34	2000-01-01 00:00:00	Runes of Suppression_34		Battlesongs	402725	34	2026-11-11 00:00:00	Battlesongs_34_2
+Battlesongs	3606	35	2000-01-01 00:00:00	Battlesongs_35						
+Nurture Warden Spec	5125	36	2000-01-01 00:00:00	Nurture Warden Spec_36						
+Instruments	1124	39	2000-01-01 00:00:00	Instruments_39		Battlesongs	401124	39	2026-11-11 00:00:00	Battlesongs_39_2
+Battlesongs	3617	40	2000-01-01 00:00:00	Battlesongs_40						
+Battlesongs	3645	41	2000-01-01 00:00:00	Battlesongs_41						
+Battlesongs	3633	42	2000-01-01 00:00:00	Battlesongs_42						
+Chants	1085	42	2000-01-01 00:00:00	Chants_42		Battlesongs	401085	42	2026-11-11 00:00:00	Battlesongs_42_2
+Battlesongs	3612	43	2000-01-01 00:00:00	Battlesongs_43						
+Battlesongs	3624	43	2000-01-01 00:00:00	Battlesongs_43_2						
+Battlesongs	3628	44	2000-01-01 00:00:00	Battlesongs_44						
+Runes of Suppression	2726	44	2000-01-01 00:00:00	Runes of Suppression_44		Battlesongs	402726	44	2026-11-11 00:00:00	Battlesongs_44_2
+Battlesongs	3652	44	2000-01-01 00:00:00	Skald Res Song 44						
+Nurture Warden Spec	5126	45	2000-01-01 00:00:00	Nurture Warden Spec_45						
+Battlesongs	3654	45	2000-01-01 00:00:00	Skald Res Song 45						
+Battlesongs	3607	46	2000-01-01 00:00:00	Battlesongs_46						
+Battlesongs	3656	46	2000-01-01 00:00:00	Skald Res Song 46						
+Battlesongs	3658	47	2000-01-01 00:00:00	Skald Res Song 47						
+Battlesongs	3690	48	2000-01-01 00:00:00	Skald Res Song 48						
+Battlesongs	3662	49	2000-01-01 00:00:00	Skald Res Song 49						
+Battlesongs	3618	50	2000-01-01 00:00:00	Battlesongs_50						
+Battlesongs	3634	50	2000-01-01 00:00:00	Battlesongs_50_2						
+Instruments	1125	50	2000-01-01 00:00:00	Instruments_50_3		Battlesongs	401125	50	2026-11-11 00:00:00	Battlesongs_50_3
+
+
+SpellID	ClientEffect	Icon	Name	Description	Target	Range	Power	CastTime	Damage	DamageType	Type	Duration	Frequency	Pulse	PulsePower	Radius	RecastDelay	ResurrectHealth	ResurrectMana	Value	Concentration	LifeDrainReturn	AmnesiaChance	Message1	Message2	Message3	Message4	InstrumentRequirement	SpellGroup	EffectGroup	SubSpellID	MoveCast	Uninterruptible	IsFocus	SharedTimerGroup	IsPrimary	IsSecondary	AllowBolt	PackageID	TooltipId	LastTimeRowUpdated	Spell_ID
+401081	1081	1081	Saga of Endurance	Target regenerates 1 endurance during the duration of the spell.	Group	1000	0	0.0	0.0	0	EnduranceRegenBuff	5	50	1	2	0	0	0	0	1.0	0	0	0	You feel invigorated!				0	401081	0	0	1	1	0	0	0	0	0	Saga_Of_Nael	1081	2026-11-11 00:00:00	401081
+401082	1082	1082	Saga of Stamina	Target regenerates 2 endurance during the duration of the spell.	Group	1000	0	0.0	0.0	0	EnduranceRegenBuff	5	50	1	5	0	0	0	0	2.0	0	0	0	You feel invigorated!				0	401081	0	0	1	1	0	0	0	0	0	Saga_Of_Nael	1082	2026-11-11 00:00:00	401082
+401083	1083	1083	Saga of Persistence	Target regenerates 3 endurance during the duration of the spell.	Group	1000	0	0.0	0.0	0	EnduranceRegenBuff	5	50	1	7	0	0	0	0	3.0	0	0	0	You feel invigorated!				0	401081	0	0	1	1	0	0	0	0	0	Saga_Of_Nael	1083	2026-11-11 00:00:00	401083
+401084	1084	1084	Saga of Resilience	Target regenerates 4 endurance during the duration of the spell.	Group	1000	0	0.0	0.0	0	EnduranceRegenBuff	5	50	1	11	0	0	0	0	4.0	0	0	0	You feel invigorated!				0	401081	0	0	1	1	0	0	0	0	0	Saga_Of_Nael	1084	2026-11-11 00:00:00	401084
+401085	1085	1085	Saga of Perseverance	Target regenerates 5 endurance during the duration of the spell.	Group	1000	0	0.0	0.0	0	EnduranceRegenBuff	5	50	1	14	0	0	0	0	5.0	0	0	0	You feel invigorated!				0	401081	0	0	1	1	0	0	0	0	0	Saga_Of_Nael	1085	2026-11-11 00:00:00	401085
+401121	1121	5171	Saga of Power	Target regenerates 1 extra power during the duration of the spell.	Group	700	0	0.0	0.0	0	PowerRegenBuff	6	60	1	0	0	0	0	0	1.0	0	0	0	You feel a calmness come over you.				0	401121	60	0	1	1	0	0	0	0	0	Saga_Of_Nael	1121	2026-11-11 00:00:00	401121
+401122	1122	5172	Saga of Energy	Target regenerates 2 extra power during the duration of the spell.	Group	700	0	0.0	0.0	0	PowerRegenBuff	6	60	1	0	0	0	0	0	2.0	0	0	0	You feel a calmness come over you.				0	401121	60	0	1	1	0	0	0	0	0	Saga_Of_Nael	1122	2026-11-11 00:00:00	401122
+401123	1123	5173	Saga of Clarity	Target regenerates 3 extra power during the duration of the spell.	Group	700	0	0.0	0.0	0	PowerRegenBuff	6	60	1	0	0	0	0	0	3.0	0	0	0	You feel a calmness come over you.				0	401121	60	0	1	1	0	0	0	0	0	Saga_Of_Nael	1123	2026-11-11 00:00:00	401123
+401124	1124	5174	Saga of the Mind	Target regenerates 4 extra power during the duration of the spell.	Group	700	0	0.0	0.0	0	PowerRegenBuff	6	60	1	0	0	0	0	0	4.0	0	0	0	You feel a calmness come over you.				0	401121	60	0	1	1	0	0	0	0	0	Saga_Of_Nael	1124	2026-11-11 00:00:00	401124
+401125	1125	5175	Saga of Empowering	Target regenerates 5 extra power during the duration of the spell.	Group	700	0	0.0	0.0	0	PowerRegenBuff	6	60	1	0	0	0	0	0	5.0	0	0	0	You feel a calmness come over you.				0	401121	60	0	1	1	0	0	0	0	0	Saga_Of_Nael	1125	2026-11-11 00:00:00	401125
+402724	2724	2724	Saga of Guard	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	16	0.0	0.0	0	Bladeturn	10	100	1	4	0	16	0	0	0.0	0	0	0	A crystal shield covers you.				0	402724	52	0	0	0	0	0	0	0	0	Saga_Of_Nael	2724	2026-11-11 00:00:00	402724
+402725	2725	2725	Saga of Barrier	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	21	0.0	0.0	0	Bladeturn	8	80	1	5	0	16	0	0	0.0	0	0	0	A crystal shield covers you.				0	402724	52	0	0	0	0	0	0	0	0	Saga_Of_Nael	2725	2026-11-11 00:00:00	402725
+402726	2726	2726	Saga of Aegis	A 'bubble' that absorbs the damage of a single melee hit.	Group	1250	28	0.0	0.0	0	Bladeturn	6	60	1	7	0	16	0	0	0.0	0	0	0	A crystal shield covers you.				0	402724	52	0	0	0	0	0	0	0	0	Saga_Of_Nael	2726	2026-11-11 00:00:00	402726
+																					
+																					
+LineName	SpellID	Level	LastTimeRowUpdated	LineXSpell_ID
+Battlesongs	401081	2	2026-11-11 00:00:00	Battlesongs_2_2
+Battlesongs	401121	10	2026-11-11 00:00:00	Battlesongs_10_2
+Battlesongs	401082	12	2026-11-11 00:00:00	Battlesongs_12_2
+Battlesongs	401122	21	2026-11-11 00:00:00	Battlesongs_21_2
+Battlesongs	401083	22	2026-11-11 00:00:00	Battlesongs_22_3
+Battlesongs	402724	26	2026-11-11 00:00:00	Battlesongs_26_2
+Battlesongs	401084	32	2026-11-11 00:00:00	Battlesongs_32_2
+Battlesongs	402725	34	2026-11-11 00:00:00	Battlesongs_34_2
+Battlesongs	401124	39	2026-11-11 00:00:00	Battlesongs_39_2
+Battlesongs	401085	42	2026-11-11 00:00:00	Battlesongs_42_2
+Battlesongs	402726	44	2026-11-11 00:00:00	Battlesongs_44_2
+Battlesongs	401125	50	2026-11-11 00:00:00	Battlesongs_50_3
+
+
+
+																				
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401081, 1081, 1081, 'Saga of Endurance', 'Target regenerates 1 endurance during the duration of the spell.', 'Group', 1000, 0, 0.0, 0.0, 0, 'EnduranceRegenBuff', 5, 50, 1, 2, 0, 0, 0, 0, 1.0, 0, 0, 0, 'You feel invigorated!', NULL, NULL, NULL, 0, 401081, 0, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1081, '46337', '401081');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401082, 1082, 1082, 'Saga of Stamina', 'Target regenerates 2 endurance during the duration of the spell.', 'Group', 1000, 0, 0.0, 0.0, 0, 'EnduranceRegenBuff', 5, 50, 1, 5, 0, 0, 0, 0, 2.0, 0, 0, 0, 'You feel invigorated!', NULL, NULL, NULL, 0, 401081, 0, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1082, '46337', '401082');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401083, 1083, 1083, 'Saga of Persistence', 'Target regenerates 3 endurance during the duration of the spell.', 'Group', 1000, 0, 0.0, 0.0, 0, 'EnduranceRegenBuff', 5, 50, 1, 7, 0, 0, 0, 0, 3.0, 0, 0, 0, 'You feel invigorated!', NULL, NULL, NULL, 0, 401081, 0, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1083, '46337', '401083');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401084, 1084, 1084, 'Saga of Resilience', 'Target regenerates 4 endurance during the duration of the spell.', 'Group', 1000, 0, 0.0, 0.0, 0, 'EnduranceRegenBuff', 5, 50, 1, 11, 0, 0, 0, 0, 4.0, 0, 0, 0, 'You feel invigorated!', NULL, NULL, NULL, 0, 401081, 0, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1084, '46337', '401084');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401085, 1085, 1085, 'Saga of Perseverance', 'Target regenerates 5 endurance during the duration of the spell.', 'Group', 1000, 0, 0.0, 0.0, 0, 'EnduranceRegenBuff', 5, 50, 1, 14, 0, 0, 0, 0, 5.0, 0, 0, 0, 'You feel invigorated!', NULL, NULL, NULL, 0, 401081, 0, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1085, '46337', '401085');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401121, 1121, 5171, 'Saga of Power', 'Target regenerates 1 extra power during the duration of the spell.', 'Group', 700, 0, 0.0, 0.0, 0, 'PowerRegenBuff', 6, 60, 1, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 'You feel a calmness come over you.', NULL, NULL, NULL, 0, 401121, 60, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1121, '46337', '401121');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401122, 1122, 5172, 'Saga of Energy', 'Target regenerates 2 extra power during the duration of the spell.', 'Group', 700, 0, 0.0, 0.0, 0, 'PowerRegenBuff', 6, 60, 1, 0, 0, 0, 0, 0, 2.0, 0, 0, 0, 'You feel a calmness come over you.', NULL, NULL, NULL, 0, 401121, 60, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1122, '46337', '401122');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401123, 1123, 5173, 'Saga of Clarity', 'Target regenerates 3 extra power during the duration of the spell.', 'Group', 700, 0, 0.0, 0.0, 0, 'PowerRegenBuff', 6, 60, 1, 0, 0, 0, 0, 0, 3.0, 0, 0, 0, 'You feel a calmness come over you.', NULL, NULL, NULL, 0, 401121, 60, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1123, '46337', '401123');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401124, 1124, 5174, 'Saga of the Mind', 'Target regenerates 4 extra power during the duration of the spell.', 'Group', 700, 0, 0.0, 0.0, 0, 'PowerRegenBuff', 6, 60, 1, 0, 0, 0, 0, 0, 4.0, 0, 0, 0, 'You feel a calmness come over you.', NULL, NULL, NULL, 0, 401121, 60, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1124, '46337', '401124');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401125, 1125, 5175, 'Saga of Empowering', 'Target regenerates 5 extra power during the duration of the spell.', 'Group', 700, 0, 0.0, 0.0, 0, 'PowerRegenBuff', 6, 60, 1, 0, 0, 0, 0, 0, 5.0, 0, 0, 0, 'You feel a calmness come over you.', NULL, NULL, NULL, 0, 401121, 60, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1125, '46337', '401125');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (402724, 2724, 2724, 'Saga of Guard', 'A ''bubble'' that absorbs the damage of a single melee hit.', 'Group', 1250, 16, 0.0, 0.0, 0, 'Bladeturn', 10, 100, 1, 4, 0, 16, 0, 0, 0.0, 0, 0, 0, 'A crystal shield covers you.', NULL, NULL, NULL, 0, 402724, 52, 0, 0, 0, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 2724, '46337', '402724');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (402725, 2725, 2725, 'Saga of Barrier', 'A ''bubble'' that absorbs the damage of a single melee hit.', 'Group', 1250, 21, 0.0, 0.0, 0, 'Bladeturn', 8, 80, 1, 5, 0, 16, 0, 0, 0.0, 0, 0, 0, 'A crystal shield covers you.', NULL, NULL, NULL, 0, 402724, 52, 0, 0, 0, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 2725, '46337', '402725');
+INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (402726, 2726, 2726, 'Saga of Aegis', 'A ''bubble'' that absorbs the damage of a single melee hit.', 'Group', 1250, 28, 0.0, 0.0, 0, 'Bladeturn', 6, 60, 1, 7, 0, 16, 0, 0, 0.0, 0, 0, 0, 'A crystal shield covers you.', NULL, NULL, NULL, 0, 402724, 52, 0, 0, 0, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 2726, '46337', '402726');
+																				
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401081, 2, '46337', 'Battlesongs_2_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401121, 10, '46337', 'Battlesongs_10_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401082, 12, '46337', 'Battlesongs_12_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401122, 21, '46337', 'Battlesongs_21_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401083, 22, '46337', 'Battlesongs_22_3');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 402724, 26, '46337', 'Battlesongs_26_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401084, 32, '46337', 'Battlesongs_32_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 402725, 34, '46337', 'Battlesongs_34_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401124, 39, '46337', 'Battlesongs_39_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401085, 42, '46337', 'Battlesongs_42_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 402726, 44, '46337', 'Battlesongs_44_2');
+INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401125, 50, '46337', 'Battlesongs_50_3');																																										
+
+
+
+c'est le moment de tester .. :)
+
+
+
+
+
+
+
+
+-- fix date, il faudrait modifier les requetes 
+UPDATE LineXSpell 
+SET LastTimeRowUpdated = datetime('now') 
+WHERE LastTimeRowUpdated = '46337';
+
+UPDATE Spell 
+SET LastTimeRowUpdated = datetime('now') 
+WHERE LastTimeRowUpdated = '46337';
+
+-- INSERT INTO LineXSpell (LineName, SpellID, Level, LastTimeRowUpdated, LineXSpell_ID) VALUES ('Battlesongs', 401125, 50, datetime('now'), 'Battlesongs_50_3');
+-- INSERT INTO Spell (SpellID, ClientEffect, Icon, Name, Description, Target, Range, Power, CastTime, Damage, DamageType, Type, Duration, Frequency, Pulse, PulsePower, Radius, RecastDelay, ResurrectHealth, ResurrectMana, Value, Concentration, LifeDrainReturn, AmnesiaChance, Message1, Message2, Message3, Message4, InstrumentRequirement, SpellGroup, EffectGroup, SubSpellID, MoveCast, Uninterruptible, IsFocus, SharedTimerGroup, IsPrimary, IsSecondary, AllowBolt, PackageID, TooltipId, LastTimeRowUpdated, Spell_ID) VALUES (401081, 1081, 1081, 'Saga of Endurance', 'Target regenerates 1 endurance during the duration of the spell.', 'Group', 1000, 0, 0.0, 0.0, 0, 'EnduranceRegenBuff', 5, 50, 1, 2, 0, 0, 0, 0, 1.0, 0, 0, 0, 'You feel invigorated!', NULL, NULL, NULL, 0, 401081, 0, 0, 1, 1, 0, 0, 0, 0, 0, 'Saga_Of_Nael', 1081, datetime('now'), '401081');

@@ -1,0 +1,16 @@
+Your notes here
+20261102
+
+
+aujourd'hui j'ia vu deux projets a suivre sur le reddit daoc.
+
+
+https://www.reddit.com/r/daoc/comments/1xkl1ei/camelot_studio_formerly_camelot_forge_is_now_open/
+une sorte di'de ./interface graphique pour creer du contenu (quetes ? et monstres ?) reste avoir commen t ca se connecte sur opendaoc.
+
+
+https://www.reddit.com/r/daoc/comments/1xm69do/ive_built_a_daocsdk/
+le dernier parle d'voaoir des bots avec des llm pour leur decision.
+sans doute un model a entrainer ... ca pourrait etre fun si il y a un prompt systeme par classe.
+
+

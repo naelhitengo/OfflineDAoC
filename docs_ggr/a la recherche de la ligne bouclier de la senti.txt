@@ -147,3 +147,56 @@ c'est ok pour le grand bouclier.
 
 
 
+https://www.reddit.com/r/daoc/comments/1xitnya/offline_daoc_is_now_a_oneclick_install_and_the/
+
+
+
+
+
+20261110
+
+Voici un résumé clair et structuré que vous pouvez directement copier-coller dans votre fichier texte pour conserver la méthode et la trace de vos recherches pour le Skald (et d'autres classes).
+
+📝 Résumé : Ajout de lignes, sorts et capacités pour le Skald (DAoC Offline / DOL)
+1. Trouver l'identifiant du Skald (ClassID)
+Pour identifier le Skald dans les tables SQL, récupérez son ClassID avec la requête suivante :
+
+SQL
+SELECT ClassID, Name FROM Class WHERE Name LIKE '%Skald%';
+2. Célérité de groupe (Haste), Bladeturn et Régénération d'Endurance
+Dans le moteur DOL, la célébration/hâte, le Bladeturn (bulle) et le regen d'endurance du Skald sont gérés via la table des sorts (Spell) et reliés aux lignes de sorts (SpellLine).
+
+A. Identifier les sorts existants
+Recherchez l'ID des sorts ou des lignes de sorts que vous souhaitez utiliser :
+
+Célérité / Haste :
+
+SQL
+SELECT SpellID, Name, SpecLine, LevelRequirement FROM Spell WHERE Name LIKE '%Celerity%' OR Name LIKE '%Haste%';
+Bladeturn (Bulle de protection) :
+
+SQL
+SELECT SpellID, Name, SpecLine, LevelRequirement FROM Spell WHERE SpellType LIKE '%Bladeturn%';
+Régénération d'Endurance :
+
+SQL
+SELECT SpellID, Name, SpecLine, LevelRequirement FROM Spell WHERE Name LIKE '%Endurance%' OR Description LIKE '%endurance%';
+B. Associer le sort au Skald
+Si la ligne de spécialisation des sorts du Skald existe déjà (ex. Battlesongs / Chants), il suffit de dupliquer ou d'ajouter le sort désiré dans cette ligne de sorts dans la table Spell en changeant le champ SpecLine par la ligne du Skald, ou d'associer le sort au bon niveau.
+
+3. Ajouter une compétence active/passive (Abilities & Shields)
+Si vous souhaitez ajouter des compétences passives ou spécifiques (comme l'utilisation de grands boucliers ou des compétences de classe) :
+
+SQL
+INSERT INTO SpecXAbility (Spec, SpecLevel, AbilityKey, AbilityLevel, ClassId, LastTimeRowUpdated)
+VALUES ('SkaldCareer', 10, 'Shield', 3, 0, datetime('now'));
+(Remplacez 'SkaldCareer' et les valeurs de niveau selon la structure exacte observée dans votre base pour le Skald).
+
+4. Le Triptyque de modification DOL
+Pour toute modification de classe sur DAoC Offline, gardez en mémoire ces 3 tables clés :
+
+ClassXSpecialization : Débloque la ligne de spécialisation (Compétence/Magie) dans la feuille de personnage.
+
+SpecXAbility : Assigne les compétences de carrière (Armor, Shield, Protect, Intercept, etc.) selon le niveau.
+
+Style / Spell : Détermine les coups spéciaux (mêlée/bouclier) ou les sorts/chants accessibles aux différents paliers.

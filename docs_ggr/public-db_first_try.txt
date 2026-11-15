@@ -1,0 +1,219 @@
+20261113
+aujourd'hui test avec public-db.
+
+je regarde ce projet :
+
+https://github.com/Eve-of-Darkness/db-public
+
+bon apres avoir telechargé le repo en git clone ,j'ai compris qu'il fallait prendre les fichiers sur la pages releases.
+https://github.com/Eve-of-Darkness/db-public/releases
+
+j'ai "dezip" le sqlite 
+public-db.sqlite.sql.7z
+
+il y avais un fichier qu'il fallait importer dans une base vide, j'ia donc une base vierge ainsi.
+
+j'ia noté quelques diffs sur les noms de tables mais bon ca ira.
+la table serverproperty etait vide, et celle des mobs faisait le double (70 => 145K)
+
+j'ai copié le ficheir dans le dossier et renommé opendaoc.sqlite3.db
+F:\games\OfflineDAoC\playable-v0.37b\runtime\data
+old-opendaoc.sqlite3.db (backup)
+
+
+j'ia pu demarrer le serveur, 
+j'ai noté que les monstres autour de fort atla etaient violet ... donc ca veut dire qu'on est sur le post refonte des zone de depart.
+
+là je vais tester en regardant le backup 
+select Category,Key,DefaultValue,Value from ServerProperty where DefaultValue != VALUE
+ 
+Category	Key	Description	DefaultValue	Value
+rates	health_regen_amount_modifier	Health regen amount modifier	1	4
+rates	endurance_regen_amount_modifier	Endurance regen amount modifier	1	4
+rates	mana_regen_amount_modifier	Mana regen amount modifier	1	4
+pvp	allow_all_realms_df	Should we allow all realms access to DF	False	True
+craft	crafting_speed	Crafting Speed Modifier - Edit this to change the speed at which you craft e.g 1.5 is 50% faster 2.0 is twice as fast (100%) 0.5 is half the speed (50%)	1	5
+craft	capital_city_crafting_skill_gain_bonus	Crafting skill gain bonus % in capital cities; 5 = 5%	5	50
+craft	capital_city_crafting_speed_bonus	Crafting speed bonus in capital cities; 2 = 2x, 3 = 3x, ..., 1 = standard	1	5
+craft	keep_crafting_speed_bonus	Crafting speed bonus in the keeps; 2 = 2x, 3 = 3x, ..., 1 = standard	1	5
+startup	starting_level	Starting Level - Edit this to set which levels experience a new player start the game with	1	24
+startup	start_as_base_class	Should we start all players as their base class? true if yes (e.g. Armsmen become Fighters on Creation)	True	false
+rates	xp_rate	Original one-times experience rate.	1	10
+rates	rvr_zones_xp_rate	Original one-times frontier experience rate.	1	10
+rates	rp_rate	Original one-times realm-point rate.	1	50
+rates	bp_rate	Original one-times bounty-point rate.	1	50
+rates	money_drop	Original one-times money-drop rate.	1	5
+autonomous_population	population_enabled	No autonomous bot is created or spawned until explicitly enabled with the owner present.	false	true
+autonomous_population	active_target	Start with zero active bots.	0	690
+autonomous_population	hard_active_cap	First-stage absolute active bot safety ceiling.	12	0
+rates	bot_xp_rate	Autonomous player-bot experience rate selected in the Offline DAoC launcher.	1	10
+
+
+autres bugs que j'ia repéré la pierre de bund de mularn ne semble pas fonctionner, et il manquait un pnj teleporteur a fort atla.
+
+BEGIN TRANSACTION;
+
+UPDATE ServerProperty SET Value = '4' WHERE Key = 'health_regen_amount_modifier';
+UPDATE ServerProperty SET Value = '4' WHERE Key = 'endurance_regen_amount_modifier';
+UPDATE ServerProperty SET Value = '4' WHERE Key = 'mana_regen_amount_modifier';
+UPDATE ServerProperty SET Value = 'True' WHERE Key = 'allow_all_realms_df';
+UPDATE ServerProperty SET Value = '5' WHERE Key = 'crafting_speed';
+UPDATE ServerProperty SET Value = '50' WHERE Key = 'capital_city_crafting_skill_gain_bonus';
+UPDATE ServerProperty SET Value = '5' WHERE Key = 'capital_city_crafting_speed_bonus';
+UPDATE ServerProperty SET Value = '5' WHERE Key = 'keep_crafting_speed_bonus';
+UPDATE ServerProperty SET Value = '48' WHERE Key = 'starting_level';
+UPDATE ServerProperty SET Value = 'false' WHERE Key = 'start_as_base_class';
+UPDATE ServerProperty SET Value = '10' WHERE Key = 'xp_rate';
+UPDATE ServerProperty SET Value = '10' WHERE Key = 'rvr_zones_xp_rate';
+UPDATE ServerProperty SET Value = '50' WHERE Key = 'rp_rate';
+UPDATE ServerProperty SET Value = '50' WHERE Key = 'bp_rate';
+UPDATE ServerProperty SET Value = '5' WHERE Key = 'money_drop';
+UPDATE ServerProperty SET Value = 'true' WHERE Key = 'population_enabled';
+UPDATE ServerProperty SET Value = '690' WHERE Key = 'active_target';
+UPDATE ServerProperty SET Value = '0' WHERE Key = 'hard_active_cap';
+UPDATE ServerProperty SET Value = '10' WHERE Key = 'bot_xp_rate';
+
+COMMIT;
+
+select * from serverproperty where key in (
+'health_regen_amount_modifier','endurance_regen_amount_modifier','mana_regen_amount_modifier','allow_all_realms_df',
+'crafting_speed','capital_city_crafting_skill_gain_bonus','capital_city_crafting_speed_bonus','keep_crafting_speed_bonus',
+'starting_level','start_as_base_class','xp_rate','rvr_zones_xp_rate','rp_rate','bp_rate','money_drop','population_enabled','active_target','hard_active_cap','bot_xp_rate
+)
+--19 
+
+on va regarder l'autre base.
+
+Category	Key	Description	DefaultValue	Value
+system	disabled_expansions	Serialized list of disabled expansions IDs, expansion IDs are client type seperated by ;		
+
+c'est vbide c'est une bonne nouvelle
+
+
+celle la elle m'a embété la dernier fois au val de quartz
+Category	Key	Description	DefaultValue	Value
+rates	rp_worth_seconds	Realm Points Worth Seconds - Edit this to change how many seconds until a player is worth RPs again after being killed 	300	300
+
+
+UPDATE ServerProperty SET Value = '60' WHERE Key = 'rp_worth_seconds';
+
+
+Category	Key	Description	DefaultValue	Value
+pve	dreadedseals_rp_values	RP values of dreaded seal types before level multiplier and RP rate is applied.	glowing_dreaded_seal|10;sanguine_dreaded_seal|10;lambent_dreaded_seal|100;lambent_dreaded_seal2|100;fulgent_dreaded_seal|500;effulgent_dreaded_seal|2500	glowing_dreaded_seal|10;sanguine_dreaded_seal|10;lambent_dreaded_seal|100;lambent_dreaded_seal2|100;fulgent_dreaded_seal|500;effulgent_dreaded_seal|2500
+c'a c'est uniquement sur le coop. 
+
+
+AccountId								Realm	Copper	Silver	Gold	Platinum	Mithril	AccountxMoney_ID	LastTimeRowUpdated
+040c822c-549a-4386-af20-7d3e3cb835ee	2		32		39		1		0			0		1	
+
+
+
+select * from AccountxMoney
+
+
+donc 
+insert into AccountxMoney 
+nonon va au pplus simple 
+select * from  AccountxMoney
+update AccountxMoney set Platinum = 2
+
+on teste que midgar là.
+
+select * from 
+AccountId	Realm	SerializedCraftingSkills	CraftingPrimarySkill	AccountxCrafting_ID	LastTimeRowUpdated
+offline	3	1|800;2|800;3|800;4|800;6|800;7|800;8|800;9|800;10|800;11|800;12|800;13|800;14|800;15|800	15	1	
+offline	2	1|902;2|944;3|800;4|800;6|1046;7|1046;8|944;9|800;10|800;11|800;12|800;13|800;14|902;15|800	12	2	
+offline	1	1|800;2|800;3|800;4|800;6|800;7|800;8|800;9|800;10|800;11|800;12|800;13|800;14|800;15|800	15	3	
+
+
+bon le craft on a fait cela : 
+
+select * from  AccountXCrafting
+--insert into AccountXCrafting 
+ 
+
+--INSERT INTO AccountXCrafting (AccountId,Realm,AccountxCrafting_ID) VALUES ('offline',1,3)
+
+UPDATE AccountXCrafting 
+SET SerializedCraftingSkills = '1|800;2|800;3|800;4|800;6|800;7|800;8|800;9|800;10|800;11|800;12|800;13|800;14|800;15|800',
+    LastTimeRowUpdated = datetime('now')
+WHERE AccountId = 'offline' AND Realm = 1;
+UPDATE AccountXCrafting SET CraftingPrimarySkill=15 WHERE AccountId = 'offline' ;
+
+on verra quand le nouveua perso sera là
+
+
+
+bon j'ai appluqe cela a mon "serveur actuel"
+--UPDATE ServerProperty SET Value = '60' WHERE Key = 'rp_worth_seconds';
+select * from ServerProperty where key = 'disabled_expansions'
+--UPDATE ServerProperty SET Value = '' WHERE Key = 'disabled_expansions';
+
+-- system	disabled_expansions	Disable Trials of Atlantis and every later expansion.	3;4;5;6	
+
+--UPDATE ServerProperty SET Value = '3;4;5;6' WHERE Key = 'disabled_expansions';
+
+A retenir pour une prochaine tentative:
+ 
+Dans DB Browser for SQLite, tu n'as pas besoin d'ouvrir deux instances : la fonctionnalité native Attacher une base de données (Attach Database) permet d'interroger et de croiser deux fichiers .sqlite simultanément dans la même session.
+
+Ouvre ta base principale (db-public.sqlite ou ton backup) dans DB Browser.
+
+Va dans Fichier > Attacher une base de données (ou Ctrl + Shift + A) et sélectionne le second fichier .sqlite.
+
+Vérification : Dans l'onglet Structure de la base de données, les tables de la seconde base apparaissent désormais sous un alias (par défaut le nom du fichier, ex: backup ou pub).
+
+Dans l'onglet Exécuter le SQL, tu peux alors requêter les deux bases en préfixant les tables par main. et <alias>. :
+
+SQL
+-- Exemple : lister les sorts présents dans la base attachée mais absents de la base principale
+SELECT SpellID, Name, Type FROM pub.Spell
+WHERE SpellID NOT IN (SELECT SpellID FROM main.Spell);
+Pour détacher la seconde base une fois tes requêtes terminées : Fichier > Détacher la base de données. Bonne soirée !
+
+
+----------------------
+
+je l'ia attaché 
+j'avais pas compris que le schema dne devait pas avoir de - donc j'ia du m'y reprendre mais la requete fonctionne :
+
+SELECT SpellID, Name, description FROM public.Spell WHERE SpellID NOT IN (SELECT SpellID FROM Spell);
+SpellID	Name	Description
+5303555	Lullaby	Mob Target hate list is cleared it becomes very easy for other group members to distract.
+12151	Chamber of Restraint	Increases the amount of spell chambers available to the caster.
+
+on a une piste 
+
+SELECT p.LineName, p.Level, s.SpellID, s.Name, s.Type, s.Value, s.Power
+FROM public.LineXSpell p
+JOIN public.Spell s ON p.SpellID = s.SpellID
+WHERE p.LineName IN (SELECT DISTINCT LineName FROM main.LineXSpell)
+  AND s.SpellID NOT IN (SELECT SpellID FROM main.Spell)
+ORDER BY p.LineName, p.Level;
+
+on passe de 2900 a 950 ... 
+
+Les 2900 lignes de différence viennent du fait que db-public inclut tous les sorts de procs d'objets, les sorts des mobs/boss de raids et les extensions post-ToA. Pour ne pas te noyer dans ces 2900 entrées, il faut croiser Spell avec LineXSpell pour isoler uniquement les sorts de joueurs.1. Isoler uniquement les vrais sorts de classes manquants dans ton backupFiltre sur les lignes de spécialisation actives de ta base actuelle :SQLSELECT p.LineName, p.Level, s.SpellID, s.Name, s.Type, s.Value, s.Power
+FROM public.LineXSpell p
+JOIN public.Spell s ON p.SpellID = s.SpellID
+WHERE p.LineName IN (SELECT DISTINCT LineName FROM main.LineXSpell)
+  AND s.SpellID NOT IN (SELECT SpellID FROM main.Spell)
+ORDER BY p.LineName, p.Level;
+Vérification : Cette requête réduit les 2900 lignes aux seuls sorts ajoutés sur les lignes de spé existantes (comme les chants/sorts post-1.65 du Skald, Ménestrel, Barde, etc.) et élimine tout le bruit des sorts de PNJ/items.2. Faire le diff inverse (tes sorts ajoutés / modifiés dans main)Pour retrouver tes ajouts perso (comme le regen mana du Skald) et les sorts modifiés (ex: valeurs de DD, coût en mana ou portée) avant toute migration ou écrasement :SQL-- 1. Sorts présents uniquement dans ta base (ajouts perso)
+SELECT SpellID, Name, Type, Value, Power
+FROM main.Spell
+WHERE SpellID NOT IN (SELECT SpellID FROM public.Spell);
+
+-- 2. Sorts communs mais dont les stats (Value, Power, CastTime, Range) ont été modifiées
+SELECT m.SpellID, m.Name, m.Value AS Val_Main, p.Value AS Val_Pub, m.Power AS Pwr_Main, p.Power AS Pwr_Pub
+FROM main.Spell m
+JOIN public.Spell p ON m.SpellID = p.SpellID
+WHERE m.Value != p.Value OR m.Power != p.Power OR m.Range != p.Range;
+Vérification : Tu obtiens la liste exacte de tes customisations à sauvegarder dans un script .sql dédié pour pouvoir les réappliquer en un clic sur n'importe quelle base.3. Importer un sort ciblé (ex: le regen mana du Skald) sans tout casserUne fois repéré dans la requête #1 (via son SpellID et son LineName, ex: Battlesongs), importe-le en deux temps :SQL-- Copie de la définition du sort (à adapter avec le bon SpellID)
+INSERT OR IGNORE INTO main.Spell
+SELECT * FROM public.Spell WHERE SpellID = <ID_DU_SORT>;
+
+-- Liaison à la ligne de spé (ex: Battlesongs)
+INSERT OR IGNORE INTO main.LineXSpell
+SELECT * FROM public.LineXSpell WHERE SpellID = <ID_DU_SORT> AND LineName = 'Battlesongs';
+Vérification : Au redémarrage du serveur, le sort apparaît directement dans la liste des sorts de la ligne Battlesongs du Skald au niveau défini dans LineXSpell (et tu peux ensuite ajuster sa colonne Value dans main.Spell pour booster le tick de regen ou un DD).
